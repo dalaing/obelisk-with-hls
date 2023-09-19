@@ -33,7 +33,6 @@ let
     hls-stan-plugin = pkgs.haskell.lib.dontCheck (self.callHackage "hls-stan-plugin" "2.0.0.0" {});
     hls-stylish-haskell-plugin = pkgs.haskell.lib.dontCheck (self.callHackage "hls-stylish-haskell-plugin" "2.0.0.0" {});
     hls-tactics-plugin = pkgs.haskell.lib.dontCheck (self.callHackage "hls-tactics-plugin" "2.0.0.0" {});
-    haskell-language-server = pkgs.haskell.lib.dontCheck (self.callHackage "haskell-language-server" "2.0.0.0" {});
     text-rope = self.callHackage "text-rope" "0.2" {};
     hie-bios = pkgs.haskell.lib.dontCheck (self.callHackage "hie-bios" "0.12.0" {});
     lsp = self.callHackage "lsp" "1.6.0.0" {};
@@ -63,18 +62,8 @@ let
     githash = pkgs.haskell.lib.dontCheck (self.callHackage "githash" "0.1.6.3" {});
     hlint = pkgs.haskell.lib.addExtraLibrary (pkgs.haskell.lib.enableCabalFlag (self.callHackage "hlint" "3.2.8" {}) "ghc-lib") self.ghc-lib-parser;
     tomland = pkgs.haskell.lib.dontCheck super.tomland;
+    haskell-language-server = pkgs.haskell.lib.enableSharedExecutables (pkgs.haskell.lib.dontCheck (self.callHackage "haskell-language-server" "2.0.0.0" {}));
   };});
-  haskell-language-server = 
-    pkgs.haskell.lib.justStaticExecutables (
-    pkgs.haskell.lib.disableCabalFlag (
-    pkgs.haskell.lib.overrideCabal ghcWithHLS.haskell-language-server (old: {
-        enableSharedExecutables = false;
-        postInstall =  ''
-        ${old.postInstall or ""}
-        remove-references-to -t ${ghc.ghc} $out/bin/haskell-language-server
-        '';
-       })
-    ) "dynamic");
 in 
-  { inherit haskell-language-server; }
+  { inherit (ghcWithHLS) haskell-language-server; }
 
